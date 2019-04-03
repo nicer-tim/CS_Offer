@@ -1,16 +1,18 @@
-/*
-* @Author: xuezaigds@gmail.com
-* @Last Modified time: 2016-03-01 14:06:39
-*/
-
 #include <iostream>
 #include <vector>
 #include <string>
 using std::cout;
 using std::vector;
 using std::string;
+using std::endl;
 
-class A{
+class D{ /**1 byte**/
+public:
+    D(){}
+    ~D(){}
+};
+
+class A{ /**8 byte**/
 public:
     A() {}
     ~A() {}
@@ -18,38 +20,34 @@ public:
     int m2;
 };
 
-class B:A{
+class B:A{ /**16 byte**/
     B() {}
     ~B() {}
-    char m2;
+    char m2; /**注意对其方式**/
     int m1;
-    static char m3;
+    static char m3; /**静态数据不在计算中**/
 };
 
-class C{
+class C{ /**12 byte**/
 public:
     C() {}
     ~C() {}
-    virtual void fun_1(){}
+    virtual void fun_1(){} /**虚函数表指针占用4byte**/
     virtual void fun_2(){}
+    virtual void fun_3(){}
     int m1;
     short m2;
 };
 
-class D{
-};
-
-class BU
-{
+class BU{/**24 byte**/
     int number;
-    union UBffer
-    {
+    union UBffer { /**对其后16byte**/
         char buffer[13];
         int number;
     }ubuf;
-    void foo(){}
-    typedef char*(*f)(void*);
-    enum {hdd,ssd,blueray} disk;
+    void foo(){} /**函数声名不占用空间**/
+    typedef char*(*f)(void*); /**取别名不占用空间**/
+    enum {hdd,ssd,blueray} disk; /**对其后4byte**/
 };
 
 int main ( ) {
@@ -68,22 +66,21 @@ int main ( ) {
     cout << "long   " << sizeof(long) << "\n";      // 8
 
     cout << "--- Class ---\n";
-    cout << sizeof(A) << ", " << sizeof(B) << "\n"; // 8, 16
-    cout << sizeof(C) << ", " << sizeof(D) << "\n"; // 12, 1 or(16, 1)
-    cout << sizeof C::m1 << ", " << sizeof C::m2 << "\n"; // 4, 2
+    cout << "A      " << sizeof(A) << ", B      " << sizeof(B) << "\n"; // 8, 16
+    cout << "C      " << sizeof(C) << ", D      " << sizeof(D) << "\n"; // 12, 1 or(16, 1)
+    cout << "BU      " << sizeof(BU) <<endl;
 
     cout << "--- Array ---\n";
     float f[] = {1.0,2.0,3.0,4.0,5.0};
     cout << "Array  " << sizeof(f) << "\n";     // 20
     char str[]="Tencent";
-    cout << "Array  " << sizeof(str) << "\n";   // 8
+    cout << "char[] " << sizeof(str) << "\n";   // 8
 
     cout << "--- Vector, String ---\n";
-    vector<int> v(10, 0);
-    cout << "Vector " << sizeof(v) << "\n";     //24
-    string s("1234");
-    cout << "String " << sizeof(s) << "\n";     // 24
+    vector<int> v(1, 0);
+    cout << "Vector " << sizeof(v) << "\n";     /**12 byte**/
+    string s("12345");
+    cout << "String " << sizeof(s) << "\n";     /**4 byte,是指针**/
 
-    cout << sizeof(BU) << std::endl;
     return 0;
 }
